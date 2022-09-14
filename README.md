@@ -1,2 +1,2 @@
-# a_sheep_assistant
+# a-sheep-assistant
 羊了个羊助手
