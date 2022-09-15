@@ -5,13 +5,41 @@
 
 本项目旨在为你快速通关羊了个羊，上手需要一定动手能力以及门槛，持续更新中...
 
-所需工具任选：Fiddler、HttpCarry、Stream
+所需工具任选：Fiddler【PC】、HttpCarry【Android】、Stream【iphone】
 
 代码见 `main.py` ，具体怎么使用懂的都懂，不可能直接完成成品代码，存在风险, 感谢 issues 贡献方法老铁们，集思广益汇集力量，本内容会随时间发生改变，请自行分辨。
 
 完成效果图: 要上榜的话建议控制时间在几分钟到几十分钟不等。
 
 ![效果图](./preview1.png)
+
+
+### 使用教程
+1、 克隆本仓库地址或者下载文件到本地，安装好 Python 环境
+```shell
+git clone https://github.com/Lcry/a-sheep-assistant.git
+```
+2、安装依赖
+```python
+pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+3、打开 `config.py` ，修改抓取的必填t值，其他参数按照注释按需修改
+```shell
+    # 获取到的header中t值,必须修改为自己的
+    "header_t": "eyxxxxxxxxx.xxxx",
+    # 获取到的header中的user-agent值
+    "header_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.33",
+    # 设定的完成耗时，单位s，默认5分钟
+    "cost_time": 300,
+    # 需要通关的次数，默认1
+    "cycle_count": 1
+```
+
+4、执行即可
+```python
+python3 main.py
+```
 
 ### 免责声明
 
