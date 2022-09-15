@@ -1,25 +1,50 @@
-# -*- coding: utf-8 -*-
-
-
 """
+主程序类
 @author : lcry
 @time : 2022/9/15 12:00
 """
-# 接口地址,请求头参数必填:t
+
+import requests
+
+import config
+
 map_api = "https://cat-match.easygame2021.com/sheep/v1/game/map_info?map_id=%s"
+# 完成游戏接口 需要参数状态以及耗时（单位秒）
 finish_api = "https://cat-match.easygame2021.com/sheep/v1/game/game_over?rank_score=1&rank_state=%s&rank_time=%s&rank_role=1&skin=1"
 
+header_t = config.get("header_t")
+header_user_agent = config.get("header_user_agent")
+cost_time = config.get("cost_time")
+cycle_count = config.get("cycle_count")
 
-# 完成闯关
+request_header = {
+    "Host": "cat-match.easygame2021.com",
+    "User-Agent": header_user_agent,
+    "t": header_t
+}
+
+"""
+调用完成闯关
+Parameters:
+  state - 状态
+  cost_time - 耗时
+"""
+
+
 def finish_game(state, cost_time):
-    pass
+    res = requests.get(finish_api % (state, cost_time), headers=request_header)
+    # err_code为0则成功
+    if res.json()["err_code"] == 0:
+        print("状态成功")
+    else:
+        print(res.json())
+        print("请检查t的值是否合法")
 
 
 if __name__ == '__main__':
-    # 第一关map_id=80001
-    # 第二关map_id=90015
-    print("开始闯关...")
-    print(map_api % 80001)
-    print(finish_api % (1, 60))
-    finish_game(1, 60)
-    print("闯关成功...")
+    print("【羊了个羊一键闯关开始启动】")
+    for i in range(cycle_count):
+        print(f"...第{i + 1}开始完成闯关...")
+        finish_game(1, 60)
+        print(f"...第{i + 1}次完成闯关...")
+    print("【羊了个羊一键闯关开始结束】")
