@@ -3,6 +3,7 @@
 @author : lcry
 @time : 2022/9/15 12:00
 """
+import random
 
 import requests
 
@@ -31,20 +32,23 @@ Parameters:
 """
 
 
-def finish_game(state, cost_time):
-    res = requests.get(finish_api % (state, cost_time), headers=request_header)
+def finish_game(state, rank_time):
+    res = requests.get(finish_api % (state, rank_time), headers=request_header)
     # err_code为0则成功
     if res.json()["err_code"] == 0:
         print("状态成功")
     else:
         print(res.json())
-        print("请检查t的值是否合法")
+        print("请检查t的值是否获取正确!")
 
 
 if __name__ == '__main__':
     print("【羊了个羊一键闯关开始启动】")
     for i in range(cycle_count):
         print(f"...第{i + 1}开始完成闯关...")
-        finish_game(1, 60)
+        if cost_time == -1:
+            cost_time = random.randint(1, 3600)
+            print(f"生成随机完成耗时:{cost_time} s")
+        finish_game(1, cost_time)
         print(f"...第{i + 1}次完成闯关...")
     print("【羊了个羊一键闯关开始结束】")
