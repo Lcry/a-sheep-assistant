@@ -46,6 +46,17 @@ pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```python
 python3 main.py
 ```
+运行结果：
+```shell
+【羊了个羊一键闯关开始启动】
+...第1次开始完成闯关...
+生成随机时间间隔，防止游戏服务器接口限流导致失败 : 3 s
+生成随机闯关完成耗时: 1523 s
+闯关羊群状态成功
+闯关话题状态成功
+...第1次完成闯关...
+【羊了个羊一键闯关开始结束】
+```
 
 ### 微信交流群
 交流相关问题请进微信群：
