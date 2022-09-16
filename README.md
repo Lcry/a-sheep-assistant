@@ -44,15 +44,11 @@ python3 main.py
 ### 微信交流群
 交流相关问题请进微信群：
 
-2群
+3群
 
-![扫码进交流群2](./weixinGroup2.png)
+![扫码进交流群3](./weixinGroup3.png)
 
-1群（已满）
-
-![扫码进交流群1](./weixinGroup1.png)
-
-
+1、2群（已满）
 
 ### 免责声明
 
