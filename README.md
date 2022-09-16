@@ -41,6 +41,11 @@ pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 python3 main.py
 ```
 
+### 微信交流群
+交流相关问题请进微信群：
+
+![扫码进交流群](./weixinGroup1.png)
+
 ### 免责声明
 
 1. 本仓库发布的 `a-sheep-assistant` (下文均用本项目代替) 项目中涉及的任何脚本，仅用于测试和学习研究，禁止用于商业用途，不能保证其合法性，准确性，完整性和有效性，请根据情况自行判断。
