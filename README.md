@@ -44,9 +44,9 @@ python3 main.py
 ### 微信交流群
 交流相关问题请进微信群：
 
-5群
+6群
 
-![扫码进交流群5](./weixinGroup5.png)
+![扫码进交流群6](./weixinGroup6.png)
 
 1、2、3、4群（已满）
 
