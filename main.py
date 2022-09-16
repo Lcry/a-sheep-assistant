@@ -40,7 +40,7 @@ Parameters:
 
 
 def finish_game_sheep(skin, rank_time):
-    res = requests.get(finish_sheep_api % (rank_time, skin), headers=request_header, timeout=10, verify=True)
+    res = requests.get(finish_sheep_api % (rank_time, skin), headers=request_header, timeout=10, verify=False)
     # err_code为0则成功
     if res.json()["err_code"] == 0:
         print("闯关羊群状态成功")
