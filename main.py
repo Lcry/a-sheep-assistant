@@ -45,7 +45,7 @@ def finish_game(state, rank_time):
 if __name__ == '__main__':
     print("【羊了个羊一键闯关开始启动】")
     for i in range(cycle_count):
-        print(f"...第{i + 1}开始完成闯关...")
+        print(f"...第{i + 1}次开始完成闯关...")
         if cost_time == -1:
             cost_time = random.randint(1, 3600)
             print(f"生成随机完成耗时:{cost_time} s")
