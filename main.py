@@ -54,7 +54,7 @@ def get_oppenid():
 def get_token(oppenid):
     s = requests.session()
     s.keep_alive = False
-    res = requests.post(get_token_api,{"UUID": },headers=request_header, timeout=10, verify=True)
+    res = requests.post(get_token_api,{"UUID": oppenid},headers=request_header, timeout=10, verify=True)
     # err_code为0则成功
     if res.json()["err_code"] == 0:
         print("\033[1;36m获取oppenid成功\033[0m")
