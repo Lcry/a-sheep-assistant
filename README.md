@@ -1,5 +1,5 @@
 # a-sheep-assistant
-羊了个羊助手，当前版本：`V2022.3.0Beta`
+羊了个羊助手，当前版本：`V2022.4.0Beta`
 
 ### 介绍
 
@@ -35,10 +35,15 @@ pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 3、打开 `config.py` ，修改抓取的必填t值，其他参数按照注释按需修改
 ```shell
-    # 获取到的header中t值,必须修改为自己的
-    "header_t": "eyxxxxxxxxx.xxxx",
+    # 参数 header_t 和 target_uid 二选一，建议使用header_t模式，若实在不会再使用target_uid模式，使用target_uid模式会耗时，但是获取一次后就可以看到header_t，自行分辨
+    # 说明: 
+    # 1、 header_t: 就是直接使用自己获取的t值
+    # 2、 target_uid：就是通过其他t换目标uid的t值(uid的值就是游戏中头像下面可以看到ID)
+    "header_t": "",
+    # target_uid: 目标uid，就是你要闯关帐号的uid，若使用header_t模式请填0
+    "target_uid": 0,
     # 获取到的header中的user-agent值
-    "header_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.33",
+    "header_user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.28(0x18001c25) NetType/WIFI Language/zh_CN",
     # 设定的完成耗时，单位s，默认-1随机表示随机生成1s~1h之内的随机数，设置为正数则为固定
     "cost_time": -1,
     # 需要通关的次数，最大支持10，默认1
@@ -54,15 +59,36 @@ pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 python3 main.py
 ```
 运行结果：
+
 ```shell
-【羊了个羊一键闯关开始启动】
-...第1次开始完成闯关...
+target_uid模式运行日志：
+> 你所选择的是使用target_uid模式
+开始尝试第1次换取用户uuid
+开始尝试第2次换取用户uuid
+开始尝试第3次换取用户uuid
+第3次尝试换取用户uuid成功
+开始尝试第1次换取用户header_t
+开始尝试第2次换取用户header_t
+开始尝试第3次换取用户header_t
+获取token成功: eyxxxxxxx.xxx
+第3次尝试换取用户header_t成功
+【羊了个羊一键闯关启动】
+...第1次尝试完成闯关...
+生成随机时间间隔，防止游戏服务器接口限流导致失败 : 5 s
+生成随机闯关完成耗时: 112 s
+恭喜你! 本次闯关羊群状态成功
+【羊了个羊一键闯关结束】
+```
+
+```shell
+header_t模式运行日志：
+> 你所选择的是直接使用header_t模式
+【羊了个羊一键闯关启动】
+...第1次尝试完成闯关...
 生成随机时间间隔，防止游戏服务器接口限流导致失败 : 3 s
-生成随机闯关完成耗时: 1523 s
-闯关羊群状态成功
-闯关话题状态成功
-...第1次完成闯关...
-【羊了个羊一键闯关开始结束】
+生成随机闯关完成耗时: 186 s
+恭喜你! 本次闯关羊群状态成功
+【羊了个羊一键闯关结束】
 ```
 
 ### 微信交流群
@@ -83,8 +109,9 @@ python3 main.py
 ### 后期计划
 
 - [ ] 获取更多皮肤接口
-- [ ] 提供超简单方法
-- [ ] 同步官方更新
+- [X] 提供超简单方法
+  - 2022年9月18日 提供uid转t方法，解决小白困扰
+- [X] 同步官方更新
 - [X] 保姆级教程
   - (2022年9月16日 @ch3nnn 提供ios使用Stream教程)
   - (2022年9月17日 @lcry 新增视频教程)
