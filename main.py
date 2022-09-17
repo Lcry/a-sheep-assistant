@@ -3,6 +3,7 @@
 @author : lcry
 @time : 2022/9/15 12:00
 """
+import base64
 import random
 import sys
 import time
@@ -14,9 +15,9 @@ import config
 
 map_api = "https://cat-match.easygame2021.com/sheep/v1/game/map_info?map_id=%s"
 # 完成羊群接口
-finish_sheep_api = "https://cat-match.easygame2021.com/sheep/v1/game/game_over?rank_score=1&rank_state=1&rank_time=%s&rank_role=1&skin=%s"
+finish_sheep_api = "https://cat-match.easygame2021.com/sheep/v1/game/game_over?rank_score=1&rank_state=1&rank_time=%s&rank_role=1&skin=%s&t=%s"
 # 完成话题接口
-finish_topic_api = "https://cat-match.easygame2021.com/sheep/v1/game/topic_game_over?rank_score=1&rank_state=1&rank_time=%s&rank_role=2&skin=%s"
+finish_topic_api = "https://cat-match.easygame2021.com/sheep/v1/game/topic_game_over?rank_score=1&rank_state=1&rank_time=%s&rank_role=2&skin=%s&t=%s"
 # 获取用户信息接口
 get_user_info_api = "https://cat-match.easygame2021.com/sheep/v1/game/user_info?uid=%s&t=%s"
 # 用户登录接口，POST请求 需要wx_open_id
@@ -29,7 +30,8 @@ cycle_count = config.get("cycle_count")
 sheep_type = config.get("sheep_type")
 topic_type = config.get("topic_type")
 target_uid = config.get("target_uid")
-sacrifice_t = ""
+sacrifice_t_encryption = "ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmxlSEFpT2pFMk9UUTFNelF4TXpjc0ltNWlaaUk2TVRZMk16UXpNVGt6Tnl3aWFXRjBJam94TmpZek5ETXdNVE0zTENKcWRHa2lPaUpEVFRwallYUmZiV0YwWTJnNmJIUXhNak0wTlRZaUxDSnZjR1Z1WDJsa0lqb2lJaXdpZFdsa0lqb3hNelU1TmprMU1pd2laR1ZpZFdjaU9pSWlMQ0pzWVc1bklqb2lJbjAucnhOcDY5Q3lfVW1ZWnQxdXpzR2tJS0ZCT1plaFczdlh6bzNrbHRKdHliWQ=="
+sacrifice_t = base64.b64decode(sacrifice_t_encryption.encode("utf-8")).decode("utf-8")
 
 urllib3.disable_warnings()
 request_header = {
@@ -40,7 +42,6 @@ request_header = {
     "Accept-Encoding": "gzip,compress,br,deflate",
     "Connection": "close"
 }
-
 """
 uid转token，实现逻辑就是先用一个正常帐号去获取wx_open_id，然后再去调生成token策略
 Parameters:
@@ -50,28 +51,48 @@ Parameters:
 
 
 def uid2token(uid, legitimate_token):
-    get_res = requests.get(get_user_info_api % (uid, legitimate_token), headers=request_header, timeout=30,
-                           verify=False)
-    uuid = get_res.json()["data"]["wx_open_id"]
-    print("获取uuid成功", uuid)
-    login_body = {
-        "uuid": str(uuid)
-    }
-    time.sleep(3)
-    login_res = requests.post(user_login_api, headers=request_header, json=login_body,
-                              timeout=15, verify=False)
-    # 相应模型
-    # {
-    #    "data" : {
-    #       "openid" : "123",
-    #       "token" : "eyxxxx",
-    #       "uid" : 111
-    #    },
-    #    "err_code" : 0,
-    #    "err_msg" : ""
-    # }
-    user_token = login_res.json()["data"]["token"]
-    print("获取token成功", user_token)
+    uuid = None
+    user_token = None
+    try_get_user_info_api_count = 1
+    try_user_login_api = 1
+    while True:
+        print(f"开始尝试第{try_get_user_info_api_count}次换取用户uuid")
+        try:
+            get_res = requests.get(get_user_info_api % (uid, legitimate_token), headers=request_header, timeout=15,
+                                   verify=False)
+            uuid = get_res.json()["data"]["wx_open_id"]
+            login_body = {
+                "uuid": str(uuid)
+            }
+        except Exception:
+            try_get_user_info_api_count += 1
+        if uuid:
+            print(f"第{try_get_user_info_api_count}次尝试换取用户uuid成功")
+            break
+
+    while True:
+        print(f"开始尝试第{try_user_login_api}次换取用户header_t")
+        try:
+            login_res = requests.post(user_login_api, headers=request_header, json=login_body, timeout=15, verify=False)
+            # 响应模型
+            # {
+            #    "data" : {
+            #       "openid" : "123",
+            #       "token" : "eyxxxx",
+            #       "uid" : 111
+            #    },
+            #    "err_code" : 0,
+            #    "err_msg" : ""
+            # }
+            user_token = login_res.json()["data"]["token"]
+            print("获取token成功:", user_token)
+            global header_t
+            header_t = user_token
+        except Exception:
+            try_user_login_api += 1
+        if user_token:
+            print(f"第{try_user_login_api}次尝试换取用户header_t成功")
+            break
     return user_token
 
 
@@ -85,7 +106,7 @@ Parameters:
 def finish_game_sheep(skin, rank_time):
     s = requests.session()
     s.keep_alive = False
-    res = requests.get(finish_sheep_api % (rank_time, skin), headers=request_header, timeout=10, verify=False)
+    res = requests.get(finish_sheep_api % (rank_time, skin, header_t), headers=request_header, timeout=10, verify=False)
     # err_code为0则成功
     if res.json()["err_code"] == 0:
         print("\033[1;36m恭喜你! 本次闯关羊群状态成功\033[0m")
@@ -104,7 +125,7 @@ Parameters:
 def finish_game_topic(skin, rank_time):
     s = requests.session()
     s.keep_alive = False
-    res = requests.get(finish_topic_api % (rank_time, skin), headers=request_header, timeout=10, verify=False)
+    res = requests.get(finish_topic_api % (rank_time, skin, header_t), headers=request_header, timeout=10, verify=False)
     # err_code为0则成功
     if res.json()["err_code"] == 0:
         print("\033[1;36m恭喜你! 本次闯关话题状态成功\033[0m")
@@ -115,10 +136,10 @@ def finish_game_topic(skin, rank_time):
 
 if __name__ == '__main__':
     if header_t == "":
-        print("你所选择的是使用uid转header_t模式")
+        print("> 你所选择的是使用target_uid模式")
         header_t = uid2token(target_uid, sacrifice_t)
     else:
-        print("你所选择的是直接使用header_t模式")
+        print("> 你所选择的是直接使用header_t模式")
     print("【羊了个羊一键闯关启动】")
     # 前置判断，程序员何必为难程序员呢，针对恶意刷次数对服务器造成压力的进行拦截
     if cycle_count > 10:
