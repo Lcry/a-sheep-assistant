@@ -11,6 +11,9 @@ import requests
 
 import config
 
+import urllib3
+urllib3.disable_warnings()
+
 map_api = "https://cat-match.easygame2021.com/sheep/v1/game/map_info?map_id=%s"
 # 完成羊群接口
 finish_sheep_api = "https://cat-match.easygame2021.com/sheep/v1/game/game_over?rank_score=1&rank_state=1&rank_time=%s&rank_role=1&skin=%s"
@@ -37,32 +40,47 @@ request_header = {
     "Accept-Encoding": "gzip,compress,br,deflate",
     "Connection": "close"
 }
+"""
+调用获取oppenid
+Parameters:
+    uid
+"""
 
-def get_oppenid():
+
+def get_oppenid(uid):
     s = requests.session()
     s.keep_alive = False
-    res = requests.get(get_oppenid_api % (uid), headers=request_header, timeout=10, verify=True)
+    res = requests.get(get_oppenid_api % (uid), headers=request_header, timeout=50, verify=False)
+    # print(res.json()["data"]["wx_open_id"])
     # err_code为0则成功
     if res.json()["err_code"] == 0:
         print("\033[1;36m获取oppenid成功\033[0m")
-        oppenid = res.data.data.wx_open_id
+        oppenid = res.json()["data"]["wx_open_id"]
         return oppenid
     else:
         print(res.json())
         print("请检查uid的值是否获取正确!")
+"""
+调用获取oppenid
+Parameters:
+    oppenid
+"""
+
 
 def get_token(oppenid):
     s = requests.session()
     s.keep_alive = False
-    res = requests.post(get_token_api,{"UUID": oppenid},headers=request_header, timeout=10, verify=True)
+    res = requests.post(get_token_api,{"uuid": oppenid},headers=request_header, timeout=50, verify=False)
+    # print(res.json()["data"])
     # err_code为0则成功
     if res.json()["err_code"] == 0:
         print("\033[1;36m获取token成功\033[0m")
-        header_t = res.data.data.token
+        header_t = res.json()["data"]["token"]
         return header_t
     else:
         print(res.json())
         print("请检查uid的值是否获取正确!")
+
 """
 调用完成闯关羊群
 Parameters:
@@ -73,7 +91,7 @@ Parameters:
 def finish_game_sheep(skin, rank_time):
     s = requests.session()
     s.keep_alive = False
-    res = requests.get(finish_sheep_api % (rank_time, skin), headers=request_header, timeout=10, verify=True)
+    res = requests.get(finish_sheep_api % (rank_time, skin), headers=request_header, timeout=10, verify=False)
     # err_code为0则成功
     if res.json()["err_code"] == 0:
         print("\033[1;36m恭喜你! 本次闯关羊群状态成功\033[0m")
@@ -92,13 +110,26 @@ Parameters:
 def finish_game_topic(skin, rank_time):
     s = requests.session()
     s.keep_alive = False
-    res = requests.get(finish_topic_api % (rank_time, skin), headers=request_header, timeout=10, verify=True)
+    res = requests.get(finish_topic_api % (rank_time, skin), headers=request_header, timeout=10, verify=False)
     # err_code为0则成功
     if res.json()["err_code"] == 0:
         print("\033[1;36m恭喜你! 本次闯关话题状态成功\033[0m")
     else:
         print(res.json())
         print("请检查t的值是否获取正确!")
+
+
+"""
+等待随机时间
+Parameters:
+
+"""
+
+
+def wait_for_random_interval():
+    interval_time = random.randint(2, 6)
+    print(f"等待随机时间间隔，防止游戏服务器接口限流导致失败 : {interval_time} s")
+    time.sleep(interval_time)
 
 
 if __name__ == '__main__':
@@ -108,14 +139,23 @@ if __name__ == '__main__':
         print("程序员何必为难程序员,请勿恶意刷次数对服务器造成压力，请设定cycle_count的值小于10以下的值，本次程序运行结束")
         print("【羊了个羊一键闯关开始结束】")
         sys.exit(0)
-        
-    print("正在获取oppenid")
-    try:
-        get_oppenid()
-        get_token(oppenid)
-    except Exception as e:
-        print(f"游戏服务器响应超时或崩溃中未及时响应，缓缓吧，等待服务器恢复后再试！")
-        
+    while True:
+        try:
+            wait_for_random_interval()
+            print("正在获取oppenid")
+            oppenid = get_oppenid(uid)
+            break
+        except Exception as e:
+            print(f"游戏服务器响应超时或崩溃中未及时响应，缓缓吧，等待服务器恢复后再试！本次失败请忽略，错误日志: {e}")
+    while True:
+        try:
+            wait_for_random_interval()
+            print("正在获取token")
+            header_t = get_token(oppenid)
+            break
+        except Exception as e:
+            print(f"游戏服务器响应超时或崩溃中未及时响应，缓缓吧，等待服务器恢复后再试！本次失败请忽略，错误日志: {e}")
+
     i = 1
     success = 0
     while True:
@@ -127,10 +167,12 @@ if __name__ == '__main__':
             print(f"生成随机闯关完成耗时: {cost_time} s")
         try:
             if sheep_type == 1:
+                wait_for_random_interval()
                 finish_game_sheep(1, cost_time)
                 success += 1
             time.sleep(interval_time)
             if topic_type == 1:
+                wait_for_random_interval()
                 finish_game_topic(1, cost_time)
                 success += 1
         except Exception as e:
