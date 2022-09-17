@@ -6,16 +6,20 @@
 import random
 import sys
 import time
-
 import requests
-
 import config
+import urllib3
+urllib3.disable_warnings()
 
 map_api = "https://cat-match.easygame2021.com/sheep/v1/game/map_info?map_id=%s"
 # 完成羊群接口
 finish_sheep_api = "https://cat-match.easygame2021.com/sheep/v1/game/game_over?rank_score=1&rank_state=1&rank_time=%s&rank_role=1&skin=%s"
 # 完成话题接口
 finish_topic_api = "https://cat-match.easygame2021.com/sheep/v1/game/topic_game_over?rank_score=1&rank_state=1&rank_time=%s&rank_role=2&skin=%s"
+# 获取oppenid接口
+get_oppenid_api = "https://cat-match.easygame2021.com/sheep/v1/game/user_info?uid=%s"
+# 获取token接口
+get_token_api = "https://cat-match.easygame2021.com/sheep/v1/user/login_tourist"
 
 header_t = config.get("header_t")
 header_user_agent = config.get("header_user_agent")
@@ -23,6 +27,7 @@ cost_time = config.get("cost_time")
 cycle_count = config.get("cycle_count")
 sheep_type = config.get("sheep_type")
 topic_type = config.get("topic_type")
+uid = config.get("uid")
 
 request_header = {
     "Host": "cat-match.easygame2021.com",
@@ -32,6 +37,46 @@ request_header = {
     "Accept-Encoding": "gzip,compress,br,deflate",
     "Connection": "close"
 }
+"""
+调用获取oppenid
+Parameters:
+    uid
+"""
+
+
+def get_oppenid(uid):
+    s = requests.session()
+    s.keep_alive = False
+    res = requests.get(get_oppenid_api % (uid), headers=request_header, timeout=50, verify=False)
+    # print(res.json()["data"]["wx_open_id"])
+    # err_code为0则成功
+    if res.json()["err_code"] == 0:
+        print("\033[1;36m获取oppenid成功\033[0m")
+        oppenid = res.json()["data"]["wx_open_id"]
+        return oppenid
+    else:
+        print(res.json())
+        print("请检查uid的值是否获取正确!")
+"""
+调用获取oppenid
+Parameters:
+    oppenid
+"""
+
+
+def get_token(oppenid):
+    s = requests.session()
+    s.keep_alive = False
+    res = requests.post(get_token_api,{"uuid": oppenid},headers=request_header, timeout=50, verify=False)
+    # print(res.json()["data"])
+    # err_code为0则成功
+    if res.json()["err_code"] == 0:
+        print("\033[1;36m获取token成功\033[0m")
+        header_t = res.json()["data"]["token"]
+        return header_t
+    else:
+        print(res.json())
+        print("请检查uid的值是否获取正确!")
 
 """
 调用完成闯关羊群
@@ -43,7 +88,7 @@ Parameters:
 def finish_game_sheep(skin, rank_time):
     s = requests.session()
     s.keep_alive = False
-    res = requests.get(finish_sheep_api % (rank_time, skin), headers=request_header, timeout=10, verify=True)
+    res = requests.get(finish_sheep_api % (rank_time, skin), headers=request_header, timeout=10, verify=False)
     # err_code为0则成功
     if res.json()["err_code"] == 0:
         print("\033[1;36m恭喜你! 本次闯关羊群状态成功\033[0m")
@@ -62,7 +107,7 @@ Parameters:
 def finish_game_topic(skin, rank_time):
     s = requests.session()
     s.keep_alive = False
-    res = requests.get(finish_topic_api % (rank_time, skin), headers=request_header, timeout=10, verify=True)
+    res = requests.get(finish_topic_api % (rank_time, skin), headers=request_header, timeout=10, verify=False)
     # err_code为0则成功
     if res.json()["err_code"] == 0:
         print("\033[1;36m恭喜你! 本次闯关话题状态成功\033[0m")
@@ -81,6 +126,19 @@ def wait_for_random_interval():
     time.sleep(interval_time)
 
 
+"""
+等待随机时间
+Parameters:
+
+"""
+
+
+def wait_for_random_interval():
+    interval_time = random.randint(2, 6)
+    print(f"等待随机时间间隔，防止游戏服务器接口限流导致失败 : {interval_time} s")
+    time.sleep(interval_time)
+
+
 if __name__ == '__main__':
     print("【羊了个羊一键闯关启动】")
     # 前置判断，程序员何必为难程序员呢，针对恶意刷次数对服务器造成压力的进行拦截
@@ -88,6 +146,22 @@ if __name__ == '__main__':
         print("程序员何必为难程序员,请勿恶意刷次数对服务器造成压力，请设定cycle_count的值小于10以下的值，本次程序运行结束")
         print("【羊了个羊一键闯关开始结束】")
         sys.exit(0)
+    while True:
+        try:
+            wait_for_random_interval()
+            print("正在获取oppenid")
+            oppenid = get_oppenid(uid)
+            break
+        except Exception as e:
+            print(f"游戏服务器响应超时或崩溃中未及时响应，缓缓吧，等待服务器恢复后再试！本次失败请忽略，错误日志: {e}")
+    while True:
+        try:
+            wait_for_random_interval()
+            print("正在获取token")
+            header_t = get_token(oppenid)
+            break
+        except Exception as e:
+            print(f"游戏服务器响应超时或崩溃中未及时响应，缓缓吧，等待服务器恢复后再试！本次失败请忽略，错误日志: {e}")
 
     i = 1
     success = 0
