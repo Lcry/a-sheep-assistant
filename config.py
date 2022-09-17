@@ -10,7 +10,7 @@ import os
 # 以下参数根据自己的需要进行修改：
 SYS_CONFIG = {
     # 无需抓包，填写uid即可。
-    "uid": "xxxxx",
+    "uid": "xxxxxxxxx",
     # 获取到的header中t值,必须修改为自己的
     "header_t": "eyxxxxxxxxx.xxxx",
     # 获取到的header中的user-agent值
@@ -18,7 +18,7 @@ SYS_CONFIG = {
     # 设定的完成耗时，单位s，默认-1随机表示随机生成1s~1h之内的随机数，设置为正数则为固定
     "cost_time": -1,
     # 需要通关的次数，最大支持10，默认1
-    "cycle_count": 2,
+    "cycle_count": 1,
     # 闯关羊群开关: 1开启/0关闭 ，默认打开
     "sheep_type": 1,
     # 闯关话题开关: 1开启/0关闭 ，默认关闭
