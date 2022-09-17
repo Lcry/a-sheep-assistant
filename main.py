@@ -21,7 +21,7 @@ get_oppenid_api = "https://cat-match.easygame2021.com/sheep/v1/game/user_info?ui
 # 获取token接口
 get_token_api = "https://cat-match.easygame2021.com/sheep/v1/user/login_tourist"
 
-header_t = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1MDI0NDUsIm5iZiI6MTY2MzQwMDI0NSwiaWF0IjoxNjYzMzk4NDQ1LCJqdGkiOiJDTTpjYXRfbWF0Y2g6bHQxMjM0NTYiLCJvcGVuX2lkIjoiIiwidWlkIjo0NTk0MjYwMiwiZGVidWciOiIiLCJsYW5nIjoiIn0.1lXIcb1WL_SdsXG5N_i1drjjACRhRZUS2uadHlT6zIY"
+header_t = config.get("header_t")
 header_user_agent = config.get("header_user_agent")
 cost_time = config.get("cost_time")
 cycle_count = config.get("cycle_count")
