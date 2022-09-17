@@ -6,11 +6,8 @@
 import random
 import sys
 import time
-
 import requests
-
 import config
-
 import urllib3
 urllib3.disable_warnings()
 
