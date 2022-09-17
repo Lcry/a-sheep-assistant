@@ -70,6 +70,16 @@ def finish_game_topic(skin, rank_time):
         print(res.json())
         print("请检查t的值是否获取正确!")
 
+"""
+等待随机时间
+Parameters:
+  
+"""
+def wait_for_random_interval():
+    interval_time = random.randint(2, 6)
+    print(f"等待随机时间间隔，防止游戏服务器接口限流导致失败 : {interval_time} s")
+    time.sleep(interval_time)
+
 
 if __name__ == '__main__':
     print("【羊了个羊一键闯关启动】")
@@ -83,17 +93,16 @@ if __name__ == '__main__':
     success = 0
     while True:
         print(f"...第{i}次尝试完成闯关...")
-        interval_time = random.randint(2, 6)
-        print(f"生成随机时间间隔，防止游戏服务器接口限流导致失败 : {interval_time} s")
         if cost_time == -1:
             cost_time = random.randint(1, 3600)
             print(f"生成随机闯关完成耗时: {cost_time} s")
         try:
             if sheep_type == 1:
+                wait_for_random_interval()
                 finish_game_sheep(1, cost_time)
                 success += 1
-            time.sleep(interval_time)
             if topic_type == 1:
+                wait_for_random_interval()
                 finish_game_topic(1, cost_time)
                 success += 1
         except Exception as e:
