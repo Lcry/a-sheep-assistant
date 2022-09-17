@@ -30,6 +30,7 @@ cycle_count = config.get("cycle_count")
 sheep_type = config.get("sheep_type")
 topic_type = config.get("topic_type")
 target_uid = config.get("target_uid")
+# 用于请求oppenid以及token的t，感谢@lyzcren 老哥 ，简单加密处理
 sacrifice_t_encryption = "ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmxlSEFpT2pFMk9UUTFNelF4TXpjc0ltNWlaaUk2TVRZMk16UXpNVGt6Tnl3aWFXRjBJam94TmpZek5ETXdNVE0zTENKcWRHa2lPaUpEVFRwallYUmZiV0YwWTJnNmJIUXhNak0wTlRZaUxDSnZjR1Z1WDJsa0lqb2lJaXdpZFdsa0lqb3hNelU1TmprMU1pd2laR1ZpZFdjaU9pSWlMQ0pzWVc1bklqb2lJbjAucnhOcDY5Q3lfVW1ZWnQxdXpzR2tJS0ZCT1plaFczdlh6bzNrbHRKdHliWQ=="
 sacrifice_t = base64.b64decode(sacrifice_t_encryption.encode("utf-8")).decode("utf-8")
 
@@ -132,16 +133,6 @@ def finish_game_topic(skin, rank_time):
     else:
         print(res.json())
         print("请检查t的值是否获取正确!")
-
-"""
-等待随机时间
-Parameters:
-  
-"""
-def wait_for_random_interval():
-    interval_time = random.randint(2, 6)
-    print(f"等待随机时间间隔，防止游戏服务器接口限流导致失败 : {interval_time} s")
-    time.sleep(interval_time)
 
 
 """

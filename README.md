@@ -1,5 +1,5 @@
 # a-sheep-assistant
-羊了个羊助手，当前版本：`V2022.4.0Beta`
+羊了个羊助手，当前版本：`V2022.4.0Beta` （[更新日志](./CHANGELOG.md)）
 
 ### 介绍
 
@@ -118,10 +118,10 @@ header_t模式运行日志：
 
 ### 感谢贡献
 
-列表按时间顺序: 
+列表按时间顺序:
+- @kariten 修复可能循环无法跳出问题，新增uid2token基础实现，参考@lyzcren 老哥以及使用的t值
 - @k-kyle 修改默认user-aget
 - @ch3nnn 新增iphone Stream 文档
-- @kariten 修复可能循环无法跳出问题
 
 
 
