@@ -16,13 +16,18 @@ map_api = "https://cat-match.easygame2021.com/sheep/v1/game/map_info?map_id=%s"
 finish_sheep_api = "https://cat-match.easygame2021.com/sheep/v1/game/game_over?rank_score=1&rank_state=1&rank_time=%s&rank_role=1&skin=%s"
 # 完成话题接口
 finish_topic_api = "https://cat-match.easygame2021.com/sheep/v1/game/topic_game_over?rank_score=1&rank_state=1&rank_time=%s&rank_role=2&skin=%s"
+# 获取oppenid接口
+get_oppenid_api = "https://cat-match.easygame2021.com/sheep/v1/game/user_info?uid=%s"
+# 获取token接口
+get_token_api = "https://cat-match.easygame2021.com/sheep/v1/user/login_tourist"
 
-header_t = config.get("header_t")
+header_t = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1MDI0NDUsIm5iZiI6MTY2MzQwMDI0NSwiaWF0IjoxNjYzMzk4NDQ1LCJqdGkiOiJDTTpjYXRfbWF0Y2g6bHQxMjM0NTYiLCJvcGVuX2lkIjoiIiwidWlkIjo0NTk0MjYwMiwiZGVidWciOiIiLCJsYW5nIjoiIn0.1lXIcb1WL_SdsXG5N_i1drjjACRhRZUS2uadHlT6zIY"
 header_user_agent = config.get("header_user_agent")
 cost_time = config.get("cost_time")
 cycle_count = config.get("cycle_count")
 sheep_type = config.get("sheep_type")
 topic_type = config.get("topic_type")
+uid = config.get("uid")
 
 request_header = {
     "Host": "cat-match.easygame2021.com",
@@ -33,6 +38,31 @@ request_header = {
     "Connection": "close"
 }
 
+def get_oppenid():
+    s = requests.session()
+    s.keep_alive = False
+    res = requests.get(get_oppenid_api % (uid), headers=request_header, timeout=10, verify=True)
+    # err_code为0则成功
+    if res.json()["err_code"] == 0:
+        print("\033[1;36m获取oppenid成功\033[0m")
+        oppenid = res.data.data.wx_open_id
+        return oppenid
+    else:
+        print(res.json())
+        print("请检查uid的值是否获取正确!")
+
+def get_token(oppenid):
+    s = requests.session()
+    s.keep_alive = False
+    res = requests.post(get_token_api,{"UUID": },headers=request_header, timeout=10, verify=True)
+    # err_code为0则成功
+    if res.json()["err_code"] == 0:
+        print("\033[1;36m获取oppenid成功\033[0m")
+        header_t = res.data.data.token
+        return header_t
+    else:
+        print(res.json())
+        print("请检查uid的值是否获取正确!")
 """
 调用完成闯关羊群
 Parameters:
@@ -78,7 +108,14 @@ if __name__ == '__main__':
         print("程序员何必为难程序员,请勿恶意刷次数对服务器造成压力，请设定cycle_count的值小于10以下的值，本次程序运行结束")
         print("【羊了个羊一键闯关开始结束】")
         sys.exit(0)
-
+        
+    print("正在获取oppenid")
+    try:
+        get_oppenid()
+        get_token(oppenid)
+    except Exception as e:
+        print(f"游戏服务器响应超时或崩溃中未及时响应，缓缓吧，等待服务器恢复后再试！")
+        
     i = 1
     success = 0
     while True:
