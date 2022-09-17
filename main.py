@@ -57,7 +57,7 @@ def get_token(oppenid):
     res = requests.post(get_token_api,{"UUID": oppenid},headers=request_header, timeout=10, verify=True)
     # err_code为0则成功
     if res.json()["err_code"] == 0:
-        print("\033[1;36m获取oppenid成功\033[0m")
+        print("\033[1;36m获取token成功\033[0m")
         header_t = res.data.data.token
         return header_t
     else:
