@@ -98,7 +98,7 @@ if __name__ == '__main__':
                 success += 1
         except Exception as e:
             print(f"游戏服务器响应超时或崩溃中未及时响应，缓缓吧，等待服务器恢复后再试！本次失败请忽略，错误日志: {e}")
-        if success == cycle_count:
+        if success >= cycle_count:
             print("【羊了个羊一键闯关结束】")
             sys.exit(0)
         print(f"\033[4;32m已成功完成{success}次\033[0m")
