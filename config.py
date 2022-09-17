@@ -9,6 +9,8 @@ import os
 
 # 以下参数根据自己的需要进行修改：
 SYS_CONFIG = {
+    # 无需抓包，填写uuid即可。
+    "uuid": "xxxxx",
     # 获取到的header中t值,必须修改为自己的
     "header_t": "eyxxxxxxxxx.xxxx",
     # 获取到的header中的user-agent值
