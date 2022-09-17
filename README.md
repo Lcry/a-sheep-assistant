@@ -11,6 +11,8 @@
 
 1、 [Stream【iphone】保姆级教程](docs/stream.md)
 
+2、 [小白保姆级视频教程B站观看](https://www.bilibili.com/video/BV1hB4y1E7G3)
+
 
 代码见 `main.py` ，配置文件 `config.py` 需要自行按需修改，具体怎么使用见下方使用教程，t 的值使用软件怎么获取这里不描述，自行探索，懂的都懂，感谢 issues 以及交流群贡献方法老铁们，集思广益汇集力量，本内容会随时间发生改变，请自行分辨。
 
@@ -85,6 +87,7 @@ python3 main.py
 - [ ] 同步官方更新
 - [X] 保姆级教程
   - (2022年9月16日 @ch3nnn 提供ios使用Stream教程)
+  - (2022年9月17日 @lcry 新增视频教程)
 
 ### 感谢贡献
 
