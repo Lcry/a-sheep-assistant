@@ -8,6 +8,7 @@ import sys
 import time
 
 import requests
+import urllib3
 
 import config
 
@@ -16,6 +17,10 @@ map_api = "https://cat-match.easygame2021.com/sheep/v1/game/map_info?map_id=%s"
 finish_sheep_api = "https://cat-match.easygame2021.com/sheep/v1/game/game_over?rank_score=1&rank_state=1&rank_time=%s&rank_role=1&skin=%s"
 # 完成话题接口
 finish_topic_api = "https://cat-match.easygame2021.com/sheep/v1/game/topic_game_over?rank_score=1&rank_state=1&rank_time=%s&rank_role=2&skin=%s"
+# 获取用户信息接口
+get_user_info_api = "https://cat-match.easygame2021.com/sheep/v1/game/user_info?uid=%s&t=%s"
+# 用户登录接口，POST请求 需要wx_open_id
+user_login_api = "https://cat-match.easygame2021.com/sheep/v1/user/login_tourist"
 
 header_t = config.get("header_t")
 header_user_agent = config.get("header_user_agent")
@@ -23,7 +28,10 @@ cost_time = config.get("cost_time")
 cycle_count = config.get("cycle_count")
 sheep_type = config.get("sheep_type")
 topic_type = config.get("topic_type")
+target_uid = config.get("target_uid")
+sacrifice_t = ""
 
+urllib3.disable_warnings()
 request_header = {
     "Host": "cat-match.easygame2021.com",
     "User-Agent": header_user_agent,
@@ -32,6 +40,40 @@ request_header = {
     "Accept-Encoding": "gzip,compress,br,deflate",
     "Connection": "close"
 }
+
+"""
+uid转token，实现逻辑就是先用一个正常帐号去获取wx_open_id，然后再去调生成token策略
+Parameters:
+  uid - 目标用户uid
+  legitimate_token - 合法权限token
+"""
+
+
+def uid2token(uid, legitimate_token):
+    get_res = requests.get(get_user_info_api % (uid, legitimate_token), headers=request_header, timeout=30,
+                           verify=False)
+    uuid = get_res.json()["data"]["wx_open_id"]
+    print("获取uuid成功", uuid)
+    login_body = {
+        "uuid": str(uuid)
+    }
+    time.sleep(3)
+    login_res = requests.post(user_login_api, headers=request_header, json=login_body,
+                              timeout=15, verify=False)
+    # 相应模型
+    # {
+    #    "data" : {
+    #       "openid" : "123",
+    #       "token" : "eyxxxx",
+    #       "uid" : 111
+    #    },
+    #    "err_code" : 0,
+    #    "err_msg" : ""
+    # }
+    user_token = login_res.json()["data"]["token"]
+    print("获取token成功", user_token)
+    return user_token
+
 
 """
 调用完成闯关羊群
@@ -43,7 +85,7 @@ Parameters:
 def finish_game_sheep(skin, rank_time):
     s = requests.session()
     s.keep_alive = False
-    res = requests.get(finish_sheep_api % (rank_time, skin), headers=request_header, timeout=10, verify=True)
+    res = requests.get(finish_sheep_api % (rank_time, skin), headers=request_header, timeout=10, verify=False)
     # err_code为0则成功
     if res.json()["err_code"] == 0:
         print("\033[1;36m恭喜你! 本次闯关羊群状态成功\033[0m")
@@ -62,7 +104,7 @@ Parameters:
 def finish_game_topic(skin, rank_time):
     s = requests.session()
     s.keep_alive = False
-    res = requests.get(finish_topic_api % (rank_time, skin), headers=request_header, timeout=10, verify=True)
+    res = requests.get(finish_topic_api % (rank_time, skin), headers=request_header, timeout=10, verify=False)
     # err_code为0则成功
     if res.json()["err_code"] == 0:
         print("\033[1;36m恭喜你! 本次闯关话题状态成功\033[0m")
@@ -72,6 +114,11 @@ def finish_game_topic(skin, rank_time):
 
 
 if __name__ == '__main__':
+    if header_t == "":
+        print("你所选择的是使用uid转header_t模式")
+        header_t = uid2token(target_uid, sacrifice_t)
+    else:
+        print("你所选择的是直接使用header_t模式")
     print("【羊了个羊一键闯关启动】")
     # 前置判断，程序员何必为难程序员呢，针对恶意刷次数对服务器造成压力的进行拦截
     if cycle_count > 10:
