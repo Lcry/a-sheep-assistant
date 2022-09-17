@@ -22,7 +22,7 @@ SYS_CONFIG = {
     # 闯关羊群开关: 1开启/0关闭 ，默认打开
     "sheep_type": 1,
     # 闯关话题开关: 1开启/0关闭 ，默认关闭
-    "topic_type": 1
+    "topic_type": 0
 }
 
 
