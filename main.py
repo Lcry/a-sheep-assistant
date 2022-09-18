@@ -56,8 +56,10 @@ def uid2token(uid, legitimate_token):
     user_token = None
     try_get_user_info_api_count = 1
     try_user_login_api = 1
+    max_try_count = 5
     while True:
         print(f"开始尝试第{try_get_user_info_api_count}次换取用户uuid")
+        wait_for_random_interval(False)
         try:
             get_res = requests.get(get_user_info_api % (uid, legitimate_token), headers=request_header, timeout=15,
                                    verify=False)
@@ -67,12 +69,18 @@ def uid2token(uid, legitimate_token):
             }
         except Exception:
             try_get_user_info_api_count += 1
+        finally:
+            # 最大尝试次数，可能是个瞎搞的uid不可能一直访问
+            if try_get_user_info_api_count > max_try_count:
+                print(f"超过target_uid模式最大尝试次数，本次程序运行结束，请稍后重试或者检查uid是否正确！")
+                sys.exit(0)
         if uuid:
             print(f"第{try_get_user_info_api_count}次尝试换取用户uuid成功")
             break
 
     while True:
         print(f"开始尝试第{try_user_login_api}次换取用户header_t")
+        wait_for_random_interval(False)
         try:
             login_res = requests.post(user_login_api, headers=request_header, json=login_body, timeout=15, verify=False)
             # 响应模型
@@ -91,6 +99,10 @@ def uid2token(uid, legitimate_token):
             header_t = user_token
         except Exception:
             try_user_login_api += 1
+        finally:
+            if try_user_login_api > max_try_count:
+                print(f"超过target_uid模式最大尝试次数，本次程序运行结束，请稍后重试或者检查uid是否正确！")
+                sys.exit(0)
         if user_token:
             print(f"第{try_user_login_api}次尝试换取用户header_t成功")
             break
@@ -138,13 +150,14 @@ def finish_game_topic(skin, rank_time):
 """
 等待随机时间
 Parameters:
-
+    - is_show ： 是否显示提示
 """
 
 
-def wait_for_random_interval():
+def wait_for_random_interval(is_show):
     interval_time = random.randint(2, 6)
-    print(f"等待随机时间间隔，防止游戏服务器接口限流导致失败 : {interval_time} s")
+    if is_show:
+        print(f"等待随机时间间隔，防止游戏服务器接口限流导致失败 : {interval_time} s")
     time.sleep(interval_time)
 
 
@@ -172,11 +185,11 @@ if __name__ == '__main__':
             print(f"生成随机闯关完成耗时: {cost_time} s")
         try:
             if sheep_type == 1:
-                wait_for_random_interval()
+                wait_for_random_interval(True)
                 finish_game_sheep(1, cost_time)
                 success += 1
             if topic_type == 1:
-                wait_for_random_interval()
+                wait_for_random_interval(True)
                 finish_game_topic(1, cost_time)
                 success += 1
         except Exception as e:
