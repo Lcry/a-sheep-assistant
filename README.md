@@ -1,5 +1,5 @@
 # a-sheep-assistant
-羊了个羊助手，当前版本：`V2022.4.0Beta` （[更新日志](./CHANGELOG.md)）
+羊了个羊助手，当前版本：`V2022.4.2Beta` （[更新日志](./CHANGELOG.md)）
 
 ### 介绍
 
@@ -11,7 +11,7 @@
 
 1、 [Stream【iphone】保姆级教程](docs/stream.md)
 
-2、 [小白保姆级视频教程B站观看](https://www.bilibili.com/video/BV1hB4y1E7G3)
+2、 [小白保姆级视频教程阿里云盘链接](https://www.aliyundrive.com/s/zboe4ArG3jn) (分享密码 : h7b8)
 
 
 代码见 `main.py` ，配置文件 `config.py` 需要自行按需修改，具体怎么使用见下方使用教程，t 的值使用软件怎么获取这里不描述，自行探索，懂的都懂，感谢 issues 以及交流群贡献方法老铁们，集思广益汇集力量，本内容会随时间发生改变，请自行分辨。
@@ -108,7 +108,7 @@ QQ交流1群已满
 
 ### 后期计划
 
-- [ ] 获取更多皮肤接口
+- [ ] 获取更多皮肤接口（皮肤仅留在本地，需要篡改数据不再实现）
 - [X] 提供超简单方法
   - 2022年9月18日 提供uid转t方法，解决小白困扰
 - [X] 同步官方更新
@@ -119,6 +119,7 @@ QQ交流1群已满
 ### 感谢贡献
 
 列表按时间顺序:
+- @meoww-bot 修复user_login_api接口 404问题
 - @kariten 修复可能循环无法跳出问题，新增uid2token基础实现，参考@lyzcren 老哥以及使用的t值
 - @k-kyle 修改默认user-agent
 - @ch3nnn 新增iphone Stream 文档
