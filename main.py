@@ -21,7 +21,7 @@ finish_topic_api = "https://cat-match.easygame2021.com/sheep/v1/game/topic_game_
 # 获取用户信息接口
 get_user_info_api = "https://cat-match.easygame2021.com/sheep/v1/game/user_info?uid=%s&t=%s"
 # 用户登录接口，POST请求 需要wx_open_id
-user_login_api = "https://cat-match.easygame2021.com/sheep/v1/user/login_tourist"
+user_login_api = "https://cat-match.easygame2021.com/sheep/v1/user/login_oppo"
 
 header_t = config.get("header_t")
 header_user_agent = config.get("header_user_agent")
@@ -38,7 +38,6 @@ urllib3.disable_warnings()
 request_header = {
     "Host": "cat-match.easygame2021.com",
     "User-Agent": header_user_agent,
-    "t": header_t,
     "Referer": "https://servicewechat.com/wx141bfb9b73c970a9/17/page-frame.html",
     "Accept-Encoding": "gzip,compress,br,deflate",
     "Connection": "close"
@@ -63,9 +62,21 @@ def uid2token(uid, legitimate_token):
         try:
             get_res = requests.get(get_user_info_api % (uid, legitimate_token), headers=request_header, timeout=15,
                                    verify=False)
-            uuid = get_res.json()["data"]["wx_open_id"]
+            
+            if get_res.status_code == 200:
+                result_json = get_res.json()
+                uuid = result_json["data"]["wx_open_id"]
+                avatar = result_json["data"]["avatar"]
+            else:
+                print("请求失败")
+                print("请求状态：{}".format(get_res.status_code))
+                sys.exit(-1)
             login_body = {
-                "uuid": str(uuid)
+                "uid": str(uuid),
+                "avatar": avatar,
+                "nick_name": "1",
+                "sex": 1
+                
             }
         except Exception:
             try_get_user_info_api_count += 1
@@ -81,7 +92,9 @@ def uid2token(uid, legitimate_token):
     while True:
         print(f"开始尝试第{try_user_login_api}次换取用户header_t")
         wait_for_random_interval(False)
+        
         try:
+
             login_res = requests.post(user_login_api, headers=request_header, json=login_body, timeout=15, verify=False)
             # 响应模型
             # {
@@ -96,9 +109,11 @@ def uid2token(uid, legitimate_token):
             user_token = login_res.json()["data"]["token"]
             print("获取token成功:", user_token)
             global header_t
+
             header_t = user_token
-        except Exception:
+        except Exception as e:
             try_user_login_api += 1
+            print(e)
         finally:
             if try_user_login_api > max_try_count:
                 print(f"超过target_uid模式最大尝试次数，本次程序运行结束，请稍后重试或者检查uid是否正确！")
