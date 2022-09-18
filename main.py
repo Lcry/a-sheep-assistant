@@ -178,8 +178,6 @@ if __name__ == '__main__':
     success = 0
     while True:
         print(f"...第{i}次尝试完成闯关...")
-        interval_time = random.randint(2, 6)
-        print(f"生成随机时间间隔，防止游戏服务器接口限流导致失败 : {interval_time} s")
         if cost_time == -1:
             cost_time = random.randint(1, 3600)
             print(f"生成随机闯关完成耗时: {cost_time} s")
