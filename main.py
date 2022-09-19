@@ -73,10 +73,9 @@ def uid2token(uid, legitimate_token):
                 sys.exit(-1)
             login_body = {
                 "uid": str(uuid),
-                "avatar": avatar,
+                "avatar": "1",
                 "nick_name": "1",
                 "sex": 1
-                
             }
         except Exception:
             try_get_user_info_api_count += 1
